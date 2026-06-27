@@ -1,0 +1,545 @@
+/* ==============================================
+   PROPRULES — GLOBAL ANIMATION SYSTEM
+   animations.css
+   Applied to all pages.
+   No Three.js. No WebGL. CSS + GSAP only.
+============================================== */
+
+/* ------ CUSTOM SCROLLBAR ------ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #01696f; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #14b8a6; }
+/* Firefox */
+* { scrollbar-width: thin; scrollbar-color: #01696f transparent; }
+
+/* ------ TEXT SELECTION ------ */
+::selection { background: rgba(20, 184, 166, 0.28); color: inherit; }
+
+/* ------ FOCUS RINGS (all interactive elements) ------ */
+*:focus-visible {
+    outline: 2px solid #14b8a6;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* ------ PAGE TRANSITION OVERLAY ------ */
+#page-transition-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #111;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+#page-transition-overlay.fade-out { opacity: 1; }
+
+/* ------ REVEAL ANIMATION INITIAL STATE ------ */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ------ CUSTOM SCROLLBAR TRACK FOR LIGHT MODE ------ */
+[data-theme="light"]::-webkit-scrollbar-thumb { background: #01696f; }
+
+/* =============================================
+   FIRMS PAGE
+============================================= */
+
+/* Firm card hover — all pages */
+.firm-card {
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
+    border-top: 2px solid transparent !important;
+}
+.firm-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45) !important;
+    border-top-color: #14b8a6 !important;
+}
+[data-theme="light"] .firm-card:hover {
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12) !important;
+}
+
+/* View rules button inside card — slide right on hover */
+.firm-card .btn-view-rules,
+.firm-card a.btn-outline,
+.firm-card a.btn-ghost {
+    transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+}
+.firm-card:hover .btn-view-rules,
+.firm-card:hover a.btn-outline,
+.firm-card:hover a.btn-ghost {
+    transform: translateX(3px) !important;
+    color: #14b8a6 !important;
+    border-color: #14b8a6 !important;
+}
+
+/* High-risk badge pulse */
+@keyframes riskPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+    50%       { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+.badge-risk-high,
+.risk-high,
+[class*="badge"][class*="high"] {
+    animation: riskPulse 3s ease-in-out infinite;
+}
+
+/* Hidden rules warning dot */
+@keyframes dotPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+}
+.badge-hidden-rules::before,
+.hidden-rules-indicator::before {
+    content: '';
+    display: inline-block;
+    width: 7px; height: 7px;
+    background: #d97706;
+    border-radius: 50%;
+    margin-right: 5px;
+    animation: dotPulse 2.5s ease-in-out infinite;
+    vertical-align: middle;
+}
+
+/* Inactive/suspended firm cards */
+.firm-card.inactive {
+    opacity: 0.55;
+    filter: saturate(0.4);
+    border-left: 3px solid rgba(239, 68, 68, 0.5) !important;
+    position: relative;
+}
+
+/* Search / filter inputs glow on focus */
+.search-input:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #14b8a6 !important;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15) !important;
+    outline: none !important;
+}
+
+/* Filter select hover */
+.filter-select {
+    transition: border-color 0.2s ease !important;
+    cursor: pointer;
+}
+.filter-select:hover { border-color: #14b8a6 !important; }
+
+/* =============================================
+   FIRM DETAIL PAGE
+============================================= */
+
+/* Rule rows with color coding */
+.rule-row-warn {
+    box-shadow: inset 3px 0 0 rgba(217, 119, 6, 0.6) !important;
+    background: rgba(217, 119, 6, 0.04) !important;
+}
+.rule-row-ok {
+    box-shadow: inset 3px 0 0 rgba(20, 184, 166, 0.5) !important;
+    background: rgba(20, 184, 166, 0.04) !important;
+}
+
+/* Warning row animated dot */
+@keyframes warnDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(1.3); }
+}
+.warn-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: #d97706;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: warnDot 2s ease-in-out infinite;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* Hidden rule card reveal sweep */
+@keyframes sweepReveal {
+    from { background-position: -100% 0; }
+    to   { background-position: 200% 0; }
+}
+.hidden-rule-reveal {
+    position: relative;
+    overflow: hidden;
+}
+.hidden-rule-reveal::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(217, 119, 6, 0.08) 40%,
+        transparent 80%
+    );
+    background-size: 200% 100%;
+    animation: sweepReveal 1.8s ease infinite;
+}
+
+/* Compare CTA button idle pulse */
+@keyframes ctaPulse {
+    0%  { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.5); }
+    60% { box-shadow: 0 0 0 10px rgba(20, 184, 166, 0); }
+    100%{ box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); }
+}
+.btn-cta-pulse {
+    animation: ctaPulse 4s ease-in-out infinite;
+}
+
+/* Watchlist star bounce */
+@keyframes starBounce {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.45); }
+    70%  { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+.star-bounce { animation: starBounce 0.4s ease forwards; }
+
+/* =============================================
+   COMPARE PAGE
+============================================= */
+
+/* Better cell (teal) */
+.cell-better {
+    background: rgba(20, 184, 166, 0.08) !important;
+    color: #14b8a6 !important;
+    font-weight: 700 !important;
+    transition: background 0.4s ease !important;
+}
+/* Worse cell (amber) */
+.cell-worse {
+    background: rgba(217, 119, 6, 0.07) !important;
+    color: #d97706 !important;
+    font-weight: 700 !important;
+    transition: background 0.4s ease !important;
+}
+
+/* Column hover tint */
+.compare-col-hover td {
+    background: rgba(20, 184, 166, 0.05) !important;
+    transition: background 0.2s ease !important;
+}
+
+/* Sticky compare header */
+.compare-sticky-header {
+    position: sticky !important;
+    top: 64px !important;
+    z-index: 30 !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    background: rgba(17,17,17,0.85) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+}
+[data-theme="light"] .compare-sticky-header {
+    background: rgba(247,246,242,0.88) !important;
+}
+
+/* Warning row pulse */
+@keyframes warnRowPulse {
+    0%, 100% { box-shadow: inset 0 0 0 0 rgba(217, 119, 6, 0.2); }
+    50%       { box-shadow: inset 0 0 8px 0 rgba(217, 119, 6, 0.35); }
+}
+.compare-warn-row { animation: warnRowPulse 3s ease-in-out infinite; }
+
+/* Ripple on add firm */
+@keyframes rippleOut {
+    0%   { opacity: 0.6; transform: scale(0.8); }
+    100% { opacity: 0;   transform: scale(2); }
+}
+.ripple-once {
+    position: absolute; inset: 0;
+    background: rgba(20, 184, 166, 0.15);
+    border-radius: inherit;
+    animation: rippleOut 0.6s ease forwards;
+    pointer-events: none;
+}
+
+/* Summary card glow */
+.compare-summary-card {
+    border: 1px solid rgba(20, 184, 166, 0.35) !important;
+    box-shadow: 0 0 24px rgba(20, 184, 166, 0.1) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+.compare-summary-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 0 36px rgba(20, 184, 166, 0.18) !important;
+}
+
+/* =============================================
+   FIND MY FIRM — QUIZ
+============================================= */
+
+/* Option card hover + selected */
+.option-btn {
+    transition: transform 0.2s ease, border-color 0.2s ease,
+                background 0.2s ease, opacity 0.2s ease !important;
+}
+.option-btn:hover {
+    transform: translateY(-4px) !important;
+    border-color: #14b8a6 !important;
+}
+.option-btn.selected {
+    background: rgba(20, 184, 166, 0.12) !important;
+    border-color: #14b8a6 !important;
+}
+.option-btn.dimmed { opacity: 0.55; }
+
+/* Checkmark bounce in */
+@keyframes checkBounce {
+    0%   { transform: scale(0); opacity: 0; }
+    60%  { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.option-btn.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 0.5rem; right: 0.75rem;
+    color: #14b8a6;
+    font-weight: 900;
+    font-size: 1rem;
+    animation: checkBounce 0.3s ease forwards;
+}
+.option-btn { position: relative; }
+
+/* Quiz question slide animation */
+.quiz-question-enter {
+    animation: slideInRight 0.3s ease forwards;
+}
+.quiz-question-exit {
+    animation: slideOutLeft 0.25s ease forwards;
+}
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(60px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideOutLeft {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(-60px); }
+}
+
+/* Progress bar fill */
+.quiz-progress-bar {
+    height: 4px;
+    background: rgba(20,184,166,0.15);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+.quiz-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #01696f, #14b8a6);
+    border-radius: 99px;
+    transition: width 0.4s ease !important;
+}
+
+/* Match result bar */
+.match-bar-wrap {
+    height: 6px; background: rgba(255,255,255,0.08);
+    border-radius: 99px; overflow: hidden; margin-top: 0.5rem;
+}
+.match-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #01696f, #14b8a6);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 1.2s ease !important;
+}
+
+/* Best match card glow */
+.result-card.best-match {
+    border-color: rgba(20, 184, 166, 0.45) !important;
+    box-shadow: 0 0 28px rgba(20, 184, 166, 0.14) !important;
+    transform: scale(1.02) !important;
+}
+
+/* =============================================
+   BLOG PAGE
+============================================= */
+
+.blog-card-img-wrap {
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+}
+.blog-card-img-wrap img {
+    transition: transform 0.4s ease !important;
+    width: 100%; display: block;
+}
+.blog-card:hover .blog-card-img-wrap img {
+    transform: scale(1.05) !important;
+}
+
+/* Article list item — teal left border on hover */
+.article-list-item {
+    border-left: 2px solid transparent;
+    padding-left: 1rem;
+    transition: border-color 0.2s ease, padding-left 0.2s ease !important;
+}
+.article-list-item:hover {
+    border-color: #14b8a6;
+    padding-left: 1.3rem;
+}
+
+/* Category badge dots */
+.cat-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.cat-dot.guide   { background: #14b8a6; }
+.cat-dot.warning { background: #d97706; animation: dotPulse 2.5s ease-in-out infinite; }
+.cat-dot.analysis { background: #6366f1; }
+
+/* =============================================
+   ACCOUNT PAGE
+============================================= */
+
+/* Watchlist card remove button hover */
+.btn-remove-watchlist {
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease !important;
+}
+.btn-remove-watchlist:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+    transform: scale(1.05) !important;
+}
+
+/* Collapse animation on remove */
+.watchlist-card-collapsing {
+    animation: collapseCard 0.35s ease forwards;
+}
+@keyframes collapseCard {
+    0%   { opacity: 1; transform: scaleY(1); max-height: 200px; }
+    100% { opacity: 0; transform: scaleY(0); max-height: 0; padding: 0; margin: 0; }
+}
+
+/* Quiz answer tag stagger handled by JS */
+.quiz-tag {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.quiz-tag.visible { opacity: 1; transform: translateY(0); }
+
+/* =============================================
+   ADMIN PAGE
+============================================= */
+
+/* Form field focus glow (admin) */
+.form-control:focus {
+    border-color: #14b8a6 !important;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15) !important;
+    outline: none !important;
+}
+
+/* Table row hover teal tint */
+.table-card tr:hover td {
+    background: rgba(20, 184, 166, 0.05) !important;
+    transition: background 0.15s ease !important;
+}
+
+/* Draft status badge pulse */
+@keyframes draftPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.45; }
+}
+.status-draft { animation: draftPulse 2s ease-in-out infinite; }
+
+/* Admin save button success checkmark */
+@keyframes checkScaleIn {
+    0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
+    70%  { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.btn-save-success i { animation: checkScaleIn 0.4s ease forwards; }
+
+/* =============================================
+   TOOLTIP COMPONENT (global)
+============================================= */
+.tooltip-wrap { position: relative; display: inline-flex; }
+.tooltip-box {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%; transform: translateX(-50%) translateY(4px);
+    background: #1a1a1a; color: #f5f5f0;
+    font-size: 0.75rem; font-weight: 500;
+    padding: 0.4rem 0.75rem; border-radius: 6px;
+    white-space: nowrap;
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease 0.18s, transform 0.2s ease 0.18s;
+    z-index: 100;
+}
+.tooltip-box::after {
+    content: '';
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1a1a1a;
+}
+.tooltip-wrap:hover .tooltip-box {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+[data-theme="light"] .tooltip-box { background: #1a1a1a; color: #f5f5f0; }
+
+/* =============================================
+   BUTTON LOADING STATE
+============================================= */
+@keyframes btnSpin {
+    to { transform: rotate(360deg); }
+}
+.btn-loading {
+    pointer-events: none;
+    opacity: 0.75;
+    position: relative;
+}
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: btnSpin 0.65s linear infinite;
+    right: 12px; top: 50%; transform: translateY(-50%);
+}
+
+/* =============================================
+   EMPTY STATE FLOAT
+============================================= */
+@keyframes emptyFloat {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+}
+.empty-state i,
+.empty-state svg,
+.empty-state-icon {
+    animation: emptyFloat 3s ease-in-out infinite;
+    display: inline-block;
+}
+
+/* =============================================
+   PREFERS-REDUCED-MOTION (ACCESSIBILITY)
+============================================= */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .reveal { opacity: 1 !important; transform: none !important; }
+}

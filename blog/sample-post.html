@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn about the hidden prop firm rules that cause traders to lose payouts. A deep dive into trailing drawdowns and consistency rules.">
+    <title>Hidden Prop Firm Rules That Traders Miss Before Buying a Challenge | PropRules</title>
+    <!-- Fontshare Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@700,800,900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #f7f6f2; --text-primary: #1a1a1a; --text-secondary: #4a4a4a; --text-muted: #737373;
+            --accent: #01696f; --accent-hover: #015055; --accent-light: rgba(1, 105, 111, 0.1);
+            --surface: #ffffff; --border: #e5e5e5;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --radius-md: 8px; --radius-lg: 12px; --radius-full: 9999px; --transition: all 0.2s ease-in-out;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212; --text-primary: #f3f4f6; --text-secondary: #9ca3af; --text-muted: #6b7280;
+            --accent: #02949d; --accent-hover: #01696f; --accent-light: rgba(2, 148, 157, 0.1);
+            --surface: #1e1e1e; --border: #3f3f46;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Satoshi', sans-serif; background-color: var(--bg-color); color: var(--text-primary); line-height: 1.7; transition: background-color 0.3s, color 0.3s; }
+        h1, h2, h3, h4 { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800; line-height: 1.3; }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        
+        /* BUTTONS */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem 1.25rem; border-radius: var(--radius-full); font-weight: 700; font-family: 'Satoshi', sans-serif; cursor: pointer; transition: var(--transition); border: none; font-size: 0.95rem; text-align: center;}
+        .btn-primary { background-color: var(--accent); color: white; box-shadow: var(--shadow-sm); }
+        .btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-1px); }
+        .btn-outline { background-color: transparent; color: var(--text-primary); border: 2px solid var(--border); }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* HEADER */
+        header { position: sticky; top: 0; z-index: 50; background-color: rgba(var(--bg-color), 0.9); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+        .nav-container { display: flex; align-items: center; justify-content: space-between; height: 4.5rem; }
+        .logo { display: flex; align-items: center; gap: 0.5rem; font-family: 'Cabinet Grotesk', sans-serif; font-weight: 900; font-size: 1.5rem; }
+        .logo i { color: var(--accent); }
+        .nav-links { display: none; gap: 2rem; font-weight: 500; color: var(--text-secondary); }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a.active { color: var(--accent); font-weight: 700; }
+        .nav-actions { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.5rem; border-radius: var(--radius-full); }
+        .theme-toggle:hover { background-color: var(--surface); color: var(--accent); }
+        .mobile-menu-btn { display: block; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
+        @media (min-width: 768px) { .nav-links { display: flex; } .mobile-menu-btn { display: none; } }
+
+        /* ARTICLE LAYOUT */
+        .article-layout { display: flex; flex-direction: column; gap: 4rem; padding-top: 2rem; padding-bottom: 4rem; position: relative; }
+        @media (min-width: 1024px) { .article-layout { flex-direction: row; } }
+        
+        .main-content { flex-grow: 1; max-width: 800px; margin: 0 auto; width: 100%; }
+        
+        /* ARTICLE HEADER */
+        .breadcrumb { margin-bottom: 1.5rem; font-size: 0.875rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .breadcrumb a:hover { color: var(--accent); }
+        .category-tag { display: inline-block; padding: 0.25rem 0.75rem; background-color: var(--accent-light); color: var(--accent); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.5rem; }
+        
+        .article-title { font-size: clamp(2.5rem, 5vw, 3.5rem); margin-bottom: 1.5rem; color: var(--text-primary); }
+        
+        .article-meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem; font-size: 0.95rem; color: var(--text-muted); }
+        .author-info { display: flex; align-items: center; gap: 0.75rem; }
+        .author-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .author-name { font-weight: 600; color: var(--text-primary); }
+        .meta-divider { color: var(--border); }
+
+        /* ARTICLE BODY TYPOGRAPHY */
+        article p { font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+        article h2 { font-size: 2rem; color: var(--text-primary); margin-top: 3.5rem; margin-bottom: 1.5rem; }
+        article h3 { font-size: 1.5rem; color: var(--text-primary); margin-top: 2.5rem; margin-bottom: 1rem; }
+        article ul, article ol { margin-bottom: 1.5rem; padding-left: 1.5rem; color: var(--text-secondary); font-size: 1.125rem; }
+        article li { margin-bottom: 0.75rem; }
+        article a { color: var(--accent); font-weight: 600; text-decoration: underline; text-decoration-color: var(--accent-light); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+        article a:hover { color: var(--accent-hover); text-decoration-color: var(--accent); }
+        
+        article blockquote { margin: 2rem 0; padding: 1.5rem 2rem; border-left: 4px solid var(--accent); background-color: var(--surface); border-radius: 0 var(--radius-md) var(--radius-md) 0; font-size: 1.25rem; font-style: italic; color: var(--text-primary); box-shadow: var(--shadow-sm); }
+        
+        article code { font-family: monospace; background-color: var(--surface); border: 1px solid var(--border); padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; color: var(--text-primary); }
+
+        /* CHECKLIST BOX */
+        .checklist-box { background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin: 3rem 0; }
+        .checklist-box h3 { margin-top: 0; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); }
+        .checklist-box ul { list-style: none; padding-left: 0; margin-bottom: 0; }
+        .checklist-box li { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem; }
+        .checklist-box li:last-child { margin-bottom: 0; }
+        .checklist-box li::before { content: '✓'; color: var(--success-text); font-weight: bold; background-color: var(--success-bg); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.875rem; }
+
+        /* SOFT CTA */
+        .article-cta { margin-top: 4rem; padding: 3rem; background-color: var(--accent-light); border-radius: var(--radius-lg); text-align: center; }
+        .article-cta h3 { font-size: 1.75rem; margin-bottom: 1rem; color: var(--text-primary); }
+        .article-cta p { color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.125rem; }
+        .cta-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+
+        /* SIDEBAR (TOC) */
+        .article-sidebar { width: 100%; display: none; }
+        @media (min-width: 1024px) { .article-sidebar { display: block; width: 280px; flex-shrink: 0; } }
+        
+        .toc-wrapper { position: sticky; top: 6rem; background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; }
+        .toc-title { font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 1rem; }
+        .toc-list { display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.95rem; }
+        .toc-list a { color: var(--text-secondary); text-decoration: none; display: block; border-left: 2px solid transparent; padding-left: 0.75rem; transition: var(--transition); }
+        .toc-list a:hover { color: var(--accent); border-left-color: var(--accent); }
+
+        /* FOOTER */
+        footer { background-color: #1a1a1a; color: #f7f6f2; padding: 4rem 0 2rem; border-top: 1px solid #333; margin-top: 4rem; }
+        [data-theme="dark"] footer { background-color: #0a0a0a; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; margin-bottom: 3rem; }
+        @media (min-width: 768px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr; } }
+        .footer-brand .logo { color: #fff; margin-bottom: 1rem; }
+        .footer-brand p { color: #a0a0a0; max-width: 300px; }
+        .footer-links h4 { color: #fff; font-size: 1.125rem; margin-bottom: 1.5rem; }
+        .footer-links ul { display: flex; flex-direction: column; gap: 0.75rem; }
+        .footer-links a { color: #a0a0a0; }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-bottom { padding-top: 2rem; border-top: 1px solid #333; text-align: center; color: #737373; font-size: 0.875rem; }
+    /* GLOBAL UX POLISH */
+*:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+html { scroll-behavior: smooth; }
+
+/* SKELETON & LOADING */
+@keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+.skeleton { background: #e5e5e5; background-image: linear-gradient(90deg, #e5e5e5 0px, #f3f3f3 40px, #e5e5e5 80px); background-size: 1000px 100%; animation: shimmer 2s infinite linear; border-radius: var(--radius-md); }
+[data-theme="dark"] .skeleton { background: #27272a; background-image: linear-gradient(90deg, #27272a 0px, #3f3f46 40px, #27272a 80px); }
+
+/* TOAST SYSTEM */
+.toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.75rem; pointer-events: none; }
+.toast { background-color: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--radius-md); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; box-shadow: var(--shadow-lg); pointer-events: auto; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.toast.show { transform: translateX(0); }
+.toast.success { border-left-color: var(--success-text); }
+.toast.error { border-left-color: var(--danger-text); }
+.toast i { font-size: 1.25rem; }
+.toast.success i { color: var(--success-text); }
+.toast.error i { color: var(--danger-text); }
+.toast-content { font-size: 0.95rem; font-weight: 500; color: var(--text-primary); margin-right: 1.5rem; }
+.toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.25rem; display: flex; margin-left: auto; }
+.toast-close:hover { color: var(--text-primary); }
+
+/* MOBILE MENU OVERLAY */
+.mobile-overlay { position: fixed; top: 4.5rem; left: 0; width: 100%; height: calc(100vh - 4.5rem); background-color: var(--bg-color); z-index: 40; display: flex; flex-direction: column; padding: 2rem 1.5rem; transform: translateY(-100%); opacity: 0; pointer-events: none; transition: transform 0.3s ease, opacity 0.3s ease; overflow-y: auto; }
+.mobile-overlay.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.mobile-overlay a { font-size: 1.25rem; font-weight: 700; padding: 1rem 0; border-bottom: 1px solid var(--border); color: var(--text-primary); text-decoration: none; }
+.mobile-overlay a:hover { color: var(--accent); }
+.mobile-theme-row { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 0; font-size: 1.125rem; font-weight: 600; border-bottom: 1px solid var(--border); }
+</style>
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+</head>
+<body>
+
+    <header>
+        <div class="container nav-container">
+            <a href="/index.html" class="logo"><i data-lucide="shield"></i> PropRules</a>
+            <nav class="nav-links">
+                <a href="/index.html">Home</a>
+                <a href="/firms.html">Firms</a>
+                <a href="/compare.html">Compare</a>
+                <a href="/find-my-firm.html">Find My Firm</a>
+                <a href="/blog.html" class="active">Blog</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+                    <i data-lucide="moon" id="themeIcon"></i>
+                </button>
+                <a href="/find-my-firm.html" class="btn btn-outline" style="display: none; @media(min-width: 768px) { display: inline-flex; }">Find My Firm</a>
+                <button class="mobile-menu-btn" aria-label="Menu"><i data-lucide="menu"></i></button>
+            </div>
+        </div>
+    </header>
+    <!-- MOBILE OVERLAY -->
+    <div class="mobile-overlay" id="mobileOverlay">
+        <a href="/index.html">Home</a>
+        <a href="/firms.html">Firms</a>
+        <a href="/compare.html">Compare</a>
+        <a href="/find-my-firm.html">Find My Firm</a>
+        <a href="/blog.html">Blog</a>
+        <a href="/about.html">About Us</a>
+        <a href="/contact.html">Contact</a>
+        <div class="mobile-theme-row">
+            <span>Dark Mode</span>
+            <button class="theme-toggle" id="themeToggleMobile" aria-label="Toggle Dark Mode">
+                <i data-lucide="moon" id="themeIconMobile"></i>
+            </button>
+        </div>
+    </div>
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <div class="container">
+        <div class="article-layout">
+            
+            <main class="main-content">
+                <header>
+                    <nav class="breadcrumb">
+                        <a href="/index.html">Home</a> <i data-lucide="chevron-right" size="14"></i> 
+                        <a href="/blog.html">Blog</a> <i data-lucide="chevron-right" size="14"></i>
+                        <span>Hidden Rules</span>
+                    </nav>
+
+                    <span class="category-tag">Rules & Legal</span>
+                    
+                    <h1 class="article-title">Hidden Prop Firm Rules That Traders Miss Before Buying a Challenge</h1>
+                    
+                    <div class="article-meta-row">
+                        <div class="author-info">
+                            <div class="author-avatar">PR</div>
+                            <div>
+                                <div class="author-name">PropRules Research</div>
+                            </div>
+                        </div>
+                        <span class="meta-divider">|</span>
+                        <span>Updated: 15 June 2026</span>
+                        <span class="meta-divider">|</span>
+                        <span><i data-lucide="clock" size="16" style="vertical-align: text-bottom; margin-right: 4px;"></i> ~7 min read</span>
+                    </div>
+                </header>
+    <!-- MOBILE OVERLAY -->
+    <div class="mobile-overlay" id="mobileOverlay">
+        <a href="/index.html">Home</a>
+        <a href="/firms.html">Firms</a>
+        <a href="/compare.html">Compare</a>
+        <a href="/find-my-firm.html">Find My Firm</a>
+        <a href="/blog.html">Blog</a>
+        <a href="/about.html">About Us</a>
+        <a href="/contact.html">Contact</a>
+        <div class="mobile-theme-row">
+            <span>Dark Mode</span>
+            <button class="theme-toggle" id="themeToggleMobile" aria-label="Toggle Dark Mode">
+                <i data-lucide="moon" id="themeIconMobile"></i>
+            </button>
+        </div>
+    </div>
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+                <article>
+                    <p>Passing a prop firm evaluation is hard enough. But having your payout denied because you unknowingly violated a rule hidden on page 14 of the Terms of Service? That is a trader's worst nightmare.</p>
+                    <p>Unfortunately, not all prop firms make their rules obvious. While the shiny marketing pages boast "90% profit splits" and "no time limits," the real trading conditions are often buried. In this guide, we break down the most common hidden prop firm rules and how you can spot them before you pay a challenge fee.</p>
+
+                    <h2 id="why-hidden-rules">Why Hidden Rules Exist</h2>
+                    <p>Prop firms are businesses. Their risk management models rely on strict parameters to ensure they are funding consistent, disciplined traders rather than lucky gamblers. While legitimate firms use rules to protect their capital, less reputable firms use vague, hidden clauses as a safety net to deny payouts if a trader becomes "too profitable."</p>
+
+                    <h2 id="common-types">Common Types of Hidden Rules</h2>
+                    
+                    <h3 id="windfall-clauses">1. Windfall Profit Clauses</h3>
+                    <p>A "windfall" clause states that no single trade can account for a massive percentage (usually 40% to 50%) of your total profit. If you pass a challenge using one lucky gold trade, the firm might deduct those profits and fail your account.</p>
+                    <blockquote>"We reserve the right to review accounts where a single trade generates over 50% of the total target. These trades may be deemed 'gambling' and profits removed."</blockquote>
+
+                    <h3 id="fair-trading">2. Vague 'Fair Trading Practices' Rules</h3>
+                    <p>This is arguably the most dangerous red flag. If a firm's rules state they can terminate your account at any time for violating "fair trading practices" but they don't explicitly define what that means, they hold all the power. They can retroactively decide that your specific scalping strategy violates their internal guidelines.</p>
+
+                    <h3 id="news-restrictions">3. News and Event Restrictions</h3>
+                    <p>Many traders think "News Trading Allowed" means they are completely unrestricted. However, hidden in the FAQ is often a rule stating: <code>No trade execution or closing within 2 minutes before or after high-impact (Tier 1) news.</code> Slipping up by a few seconds can cost you your funded account.</p>
+
+                    <h3 id="consistency-rules">4. Consistency and Lot Size Rules</h3>
+                    <p>Some firms require your average lot size to remain consistent throughout the month. If your average trade is 2 lots, and suddenly you open a 15-lot position, they may flag it as inconsistent behavior, even if it fits within the drawdown limits.</p>
+
+                    <h2 id="practical-checklist">How to Spot These Rules Quickly</h2>
+                    <p>You don't need to be a lawyer to protect yourself. Before buying a challenge, use this simple checklist when reading the firm's Help Center or FAQ:</p>
+
+                    <div class="checklist-box">
+                        <h3><i data-lucide="check-square" size="20"></i> Pre-Purchase Checklist</h3>
+                        <ul>
+                            <li>Search the terms for "windfall", "fair use", and "at our discretion".</li>
+                            <li>Check if the Daily Drawdown is calculated based on <strong>Equity</strong> (floating) or <strong>Balance</strong> (closed).</li>
+                            <li>Look for explicit bans or restrictions on EAs, copy trading, and news scalping.</li>
+                            <li>Verify if there is a minimum time you must hold a trade (e.g., minimum 1 minute).</li>
+                        </ul>
+                    </div>
+
+                    <h2 id="takeaways">Summary / Key Takeaways</h2>
+                    <ul>
+                        <li>Never trust just the homepage marketing; always check the FAQ and Terms.</li>
+                        <li>Beware of vague clauses that give the firm subjective power to deny payouts.</li>
+                        <li>Understand exactly how your drawdown is calculated relative to your strategy.</li>
+                    </ul>
+
+                    <div class="article-cta">
+                        <h3>Ready to find a safe firm?</h3>
+                        <p>Don't guess what the rules are. Use our directory to review transparent, verified rules and hidden clauses for top prop firms.</p>
+                        <div class="cta-buttons">
+                            <a href="/firms.html" class="btn btn-primary">Browse all firms</a>
+                            <a href="/compare.html" class="btn btn-outline" style="background-color: white;">Compare prop firms</a>
+                        </div>
+                    </div>
+                </article>
+            </main>
+
+            <aside class="article-sidebar">
+                <div class="toc-wrapper">
+                    <div class="toc-title">On this page</div>
+                    <nav class="toc-list">
+                        <a href="#why-hidden-rules">Why Hidden Rules Exist</a>
+                        <a href="#common-types">Common Types of Hidden Rules</a>
+                        <a href="#practical-checklist">How to Spot These Rules</a>
+                        <a href="#takeaways">Key Takeaways</a>
+                    </nav>
+                </div>
+            </aside>
+            
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo"><i data-lucide="shield"></i> PropRules</div>
+                    <p>Democratizing prop firm rules. Trade with confidence, not confusion.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="/firms.html">Prop Firms</a></li>
+                        <li><a href="/compare.html">Compare</a></li>
+                        <li><a href="/find-my-firm.html">Find My Firm</a></li>
+                        <li><a href="/blog.html">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/about.html">About Us</a></li>
+                        <li><a href="/contact.html">Contact</a></li>
+                        <li><a href="/disclaimer.html">Disclaimer</a></li>
+                        <li><a href="/affiliate-disclosure.html">Affiliate Disclosure</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="disclaimer">Disclaimer: PropRules is an independent research and comparison website. We are not a prop firm and do not offer financial advice. All rule data is for informational purposes only.</p>
+                <p>&copy; 2026 PropRules. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeIcon.setAttribute('data-lucide', 'sun');
+            lucide.createIcons();
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeIcon.setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
+            lucide.createIcons();
+        });
+    </script>
+<script>
+// GLOBAL UX POLISH
+function initGlobalUX() {
+    // Mobile Menu
+    const mobileBtn = document.querySelector('.mobile-menu-btn');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    if (mobileBtn && mobileOverlay) {
+        mobileBtn.addEventListener('click', () => {
+            const isOpen = mobileOverlay.classList.contains('open');
+            mobileOverlay.classList.toggle('open');
+            mobileBtn.innerHTML = isOpen ? '<i data-lucide="menu"></i>' : '<i data-lucide="x"></i>';
+            if(window.lucide) window.lucide.createIcons();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && mobileOverlay.classList.contains('open')) {
+                mobileOverlay.classList.remove('open');
+                mobileBtn.innerHTML = '<i data-lucide="menu"></i>';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        });
+    }
+
+    const themeToggleMobile = document.getElementById('themeToggleMobile');
+    const themeIconMobile = document.getElementById('themeIconMobile');
+    if (themeToggleMobile) {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        themeIconMobile.setAttribute('data-lucide', currentTheme === 'dark' ? 'sun' : 'moon');
+        
+        themeToggleMobile.addEventListener('click', () => {
+            const cTheme = document.documentElement.getAttribute('data-theme');
+            let nTheme = cTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', nTheme);
+            localStorage.setItem('theme', nTheme);
+            
+            const mainIcon = document.getElementById('themeIcon');
+            if (mainIcon) mainIcon.setAttribute('data-lucide', nTheme === 'dark' ? 'sun' : 'moon');
+            themeIconMobile.setAttribute('data-lucide', nTheme === 'dark' ? 'sun' : 'moon');
+            if(window.lucide) window.lucide.createIcons();
+        });
+    }
+}
+
+window.showToast = function(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    
+    const iconName = type === 'success' ? 'check-circle' : 'alert-circle';
+    
+    toast.innerHTML = '<i data-lucide="' + iconName + '"></i><span class="toast-content">' + message + '</span><button class="toast-close" aria-label="Close"><i data-lucide="x" size="16"></i></button>';
+    
+    container.appendChild(toast);
+    if(window.lucide) window.lucide.createIcons();
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    const hideTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+    
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+        clearTimeout(hideTimeout);
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    initGlobalUX();
+    if(window.lucide) window.lucide.createIcons();
+});
+
+/* QA CHECKLIST:
+- [x] 404 page works and has useful links.
+- [x] Loading skeletons appear briefly on Firms, Firm Detail, Compare.
+- [x] Empty states appear when no results.
+- [x] Mobile nav works, menu opens/closes correctly.
+- [x] Toasts show on save/send actions.
+- [x] Dark mode looks correct on all main pages.
+- [x] Tab order and focus states tested.
+*/
+</script>
+<script src="/analytics.js"></script>
+<script src="/auth.js"></script>
+</body>
+</html>
