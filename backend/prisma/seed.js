@@ -16,6 +16,7 @@ async function main() {
       password: passwordHash,
       name: 'Admin User',
       role: 'admin',
+      points: 1000
     },
   });
 
@@ -26,13 +27,26 @@ async function main() {
     create: {
       name: 'FTMO',
       slug: 'ftmo',
-      logo: 'Logo', 
+      logo: 'https://cdn.iconscout.com/icon/free/png-256/free-ftmo-3628795-3030100.png', 
       country: 'Czech Republic',
       founded_year: 2015,
       assets: ['Forex', 'Commodities', 'Indices', 'Crypto', 'Bonds', 'Equities'],
       platforms: ['MT4', 'MT5', 'cTrader', 'DXtrade'],
       max_allocation: 400000,
       description: 'FTMO is one of the most established and reliable prop firms in the industry.',
+      rating: 4.9,
+      review_count: 1250,
+      is_verified: true,
+      rules: {
+        create: {
+          news_trading: true,
+          ea_bots: true,
+          overnight_holds: false,
+          weekend_holds: false,
+          consistency_rule: false,
+          min_trading_days: 4
+        }
+      }
     },
   });
 
@@ -47,75 +61,51 @@ async function main() {
       assets: ['Futures'],
       platforms: ['Tradovate', 'Rithmic', 'NinjaTrader'],
       max_allocation: 3000000,
-      description: 'Apex Trader Funding offers futures funding with flexible rules and multiple accounts.',
+      description: 'Apex Trader Funding offers futures funding with flexible rules.',
+      rating: 4.8,
+      review_count: 890,
+      is_verified: true,
+      rules: {
+        create: {
+          news_trading: true,
+          ea_bots: true,
+          weekend_holds: false,
+          min_trading_days: 7
+        }
+      }
     },
-  });
-
-  const fundingPips = await prisma.firm.upsert({
-    where: { slug: 'funding-pips' },
-    update: {},
-    create: {
-      name: 'Funding Pips',
-      slug: 'funding-pips',
-      country: 'UAE',
-      founded_year: 2022,
-      assets: ['Forex', 'Crypto', 'Indices', 'Metals'],
-      platforms: ['MT4', 'MT5'],
-      max_allocation: 300000,
-      description: 'Funding Pips is a newer firm known for fast payouts and tight spreads.',
-    },
-  });
-
-  // Create Firm Rules
-  await prisma.firmRule.createMany({
-    skipDuplicates: true,
-    data: [
-      { firm_id: ftmo.id, category: 'news_trading', value: 'Allowed with restrictions', is_allowed: true, description: 'Not allowed 2 mins before/after on regular accounts, allowed on Swing accounts.' },
-      { firm_id: ftmo.id, category: 'weekend_holding', value: 'Not Allowed', is_allowed: false, description: 'Only allowed on Swing accounts.' },
-      { firm_id: ftmo.id, category: 'eas', value: 'Allowed', is_allowed: true, description: 'Must be your own code.' },
-      
-      { firm_id: apex.id, category: 'news_trading', value: 'Allowed', is_allowed: true, description: 'Trading during news is fully allowed.' },
-      { firm_id: apex.id, category: 'weekend_holding', value: 'Not Allowed', is_allowed: false, description: 'All positions must be closed before the weekend.' },
-    ],
   });
 
   // Create Challenges
   await prisma.challenge.createMany({
-    skipDuplicates: true,
     data: [
-      { firm_id: ftmo.id, name: '100k Evaluation', account_size: 100000, challenge_type: '2-Step', fee: 540, fee_currency: 'EUR', profit_target_pct: '10% / 5%', max_daily_loss_pct: 5, max_total_loss_pct: 10, profit_split_pct: 80, scaling_plan: true },
-      { firm_id: ftmo.id, name: '200k Evaluation', account_size: 200000, challenge_type: '2-Step', fee: 1080, fee_currency: 'EUR', profit_target_pct: '10% / 5%', max_daily_loss_pct: 5, max_total_loss_pct: 10, profit_split_pct: 80, scaling_plan: true },
-      { firm_id: apex.id, name: '50k Full', account_size: 50000, challenge_type: '1-Step', fee: 167, fee_currency: 'USD', profit_target_pct: '6%', max_daily_loss_pct: null, max_total_loss_pct: 5, profit_split_pct: 90, scaling_plan: false },
-      { firm_id: fundingPips.id, name: '100k Evaluation', account_size: 100000, challenge_type: '2-Step', fee: 399, fee_currency: 'USD', profit_target_pct: '8% / 5%', max_daily_loss_pct: 5, max_total_loss_pct: 10, profit_split_pct: 80, scaling_plan: true },
+      { firm_id: ftmo.id, type: '2-Step', account_size: 100000, steps: 2, profit_target: [10, 5], daily_loss: [5], max_loss: [10], profit_split: '80%', price: 540 },
+      { firm_id: ftmo.id, type: '2-Step', account_size: 200000, steps: 2, profit_target: [10, 5], daily_loss: [5], max_loss: [10], profit_split: '80%', price: 1080 },
+      { firm_id: apex.id, type: '1-Step', account_size: 50000, steps: 1, profit_target: [6], daily_loss: [0], max_loss: [5], profit_split: '90%', price: 167 },
     ]
   });
 
   // Create Reviews
   await prisma.review.createMany({
-    skipDuplicates: true,
     data: [
-      { firm_id: ftmo.id, user_id: adminUser.id, rating: 5, content: 'Excellent firm. Payouts are always on time.', status: 'approved' },
-      { firm_id: apex.id, user_id: adminUser.id, rating: 4, content: 'Great for futures, but trailing drawdown can be tricky.', status: 'approved' },
-      { firm_id: fundingPips.id, user_id: adminUser.id, rating: 5, content: 'Tight spreads and no nonsense rules.', status: 'approved' },
+      { firm_id: ftmo.id, user_id: adminUser.id, trading_conditions: 5, customer_care: 5, user_friendliness: 5, payout_process: 5, overall_rating: 5, review_text: 'Excellent firm. Payouts are always on time.', experience_type: 'paid out', is_verified: true, status: 'approved' },
+      { firm_id: apex.id, user_id: adminUser.id, trading_conditions: 4, customer_care: 4, user_friendliness: 4, payout_process: 5, overall_rating: 4.25, review_text: 'Great for futures, trailing drawdown can be tricky.', experience_type: 'funded', is_verified: true, status: 'approved' },
     ]
   });
 
   // Create Payouts
   await prisma.payout.createMany({
-    skipDuplicates: true,
     data: [
-      { firm_id: ftmo.id, user_id: adminUser.id, amount: 15000, currency: 'USD', proof_url: 'https://example.com/proof1', status: 'verified', payout_date: new Date('2026-10-15') },
-      { firm_id: apex.id, user_id: adminUser.id, amount: 8500, currency: 'USD', proof_url: 'https://example.com/proof2', status: 'verified', payout_date: new Date('2026-10-18') },
-      { firm_id: ftmo.id, user_id: adminUser.id, amount: 45000, currency: 'USD', status: 'verified', payout_date: new Date('2026-09-20') },
+      { firm_id: ftmo.id, trader_username: 'Trader123', amount: 15000, payout_date: new Date('2026-10-15'), method: 'Crypto', market_type: 'Forex' },
+      { firm_id: apex.id, trader_username: 'FutureKing', amount: 8500, payout_date: new Date('2026-10-18'), method: 'Deel', market_type: 'Futures' },
     ]
   });
 
   // Create Offers
   await prisma.offer.createMany({
-    skipDuplicates: true,
     data: [
-      { firm_id: ftmo.id, title: '10% Off All Challenges', promo_code: 'PROPRULES10', discount_pct: 10, is_active: true, expiry_date: new Date('2027-12-31') },
-      { firm_id: apex.id, title: '80% Off Flash Sale', promo_code: 'SAVE80', discount_pct: 80, is_active: true, expiry_date: new Date('2026-12-31') },
+      { firm_id: ftmo.id, promo_code: 'PROPRULES10', discount_percentage: 10, description: '10% Off All Challenges', is_active: true, expiry_date: new Date('2027-12-31') },
+      { firm_id: apex.id, promo_code: 'SAVE80', discount_percentage: 80, description: '80% Off Flash Sale', is_active: true, expiry_date: new Date('2026-12-31') },
     ]
   });
 

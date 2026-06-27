@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 
-const inter = Inter({ subsets: ["latin"] });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "PropRules | Compare Prop Trading Firms",
@@ -17,9 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} min-h-screen flex flex-col bg-slate-950 text-slate-50`}>
+      <body className={`${jakarta.className} min-h-screen flex flex-col bg-[#050505] text-slate-50 antialiased selection:bg-blue-500/30`}>
         <Navbar />
-        <main className="flex-1">
+        <main className="flex-1 relative z-10">
           {children}
         </main>
       </body>
