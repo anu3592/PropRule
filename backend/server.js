@@ -9,6 +9,11 @@ import authRoutes from './routes/auth.js';
 import firmsRoutes from './routes/firms.js';
 import quizRoutes from './routes/quiz.js';
 import analyticsRoutes from './routes/analytics.js';
+import challengesRoutes from './routes/challenges.js';
+import reviewsRoutes from './routes/reviews.js';
+import payoutsRoutes from './routes/payouts.js';
+import offersRoutes from './routes/offers.js';
+import loyaltyRoutes from './routes/loyalty.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +30,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/firms', firmsRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/challenges', challengesRoutes);
+app.use('/api/reviews', reviewsRoutes);
+app.use('/api/payouts', payoutsRoutes);
+app.use('/api/offers', offersRoutes);
+app.use('/api/loyalty', loyaltyRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

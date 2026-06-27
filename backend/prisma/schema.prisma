@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String?
+  name       String?
+  role       String   @default("user") // user, admin, firm_owner
+  points     Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  reviews    Review[]
+  loyalty_claims   LoyaltyClaim[]
+}
+
+model Firm {
+  id             String         @id @default(uuid())
+  name           String         @unique
+  slug           String         @unique
+  logo           String?
+  country        String?
+  founded_year   Int?
+  assets         String[]
+  platforms      String[]
+  max_allocation Float?
+  rating         Float          @default(0)
+  review_count   Int            @default(0)
+  is_verified    Boolean        @default(false)
+  is_listed      Boolean        @default(true)
+  description    String?
+  created_at     DateTime       @default(now())
+  
+  rules          FirmRule?
+  challenges     Challenge[]
+  reviews        Review[]
+  payouts        Payout[]
+  offers         Offer[]
+}
+
+model FirmRule {
+  id               String   @id @default(uuid())
+  firm_id          String   @unique
+  firm             Firm     @relation(fields: [firm_id], references: [id], onDelete: Cascade)
+  news_trading     Boolean?
+  ea_bots          Boolean?
+  overnight_holds  Boolean?
+  weekend_holds    Boolean?
+  consistency_rule Boolean?
+  min_trading_days Int?
+  copy_trading     Boolean?
+  hedging          Boolean?
+}
+
+model Challenge {
+  id               String   @id @default(uuid())
+  firm_id          String
+  firm             Firm     @relation(fields: [firm_id], references: [id], onDelete: Cascade)
+  type             String   // "1-Step", "2-Step", "Instant"
+  account_size     Float
+  steps            Int
+  profit_target    Float[]
+  daily_loss       Float[]
+  max_loss         Float[]
+  profit_split     String?
+  payout_frequency String?
+  price            Float
+  discounted_price Float?
+  promo_code       String?
+  loyalty_points   Int      @default(0)
+}
+
+model Review {
+  id                 String   @id @default(uuid())
+  firm_id            String
+  firm               Firm     @relation(fields: [firm_id], references: [id], onDelete: Cascade)
+  user_id            String
+  user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  trading_conditions Int      // 1-5 rating
+  customer_care      Int      // 1-5 rating
+  user_friendliness  Int      // 1-5 rating
+  payout_process     Int      // 1-5 rating
+  overall_rating     Float
+  review_text        String?
+  experience_type    String   // "funded", "paid out", "evaluation"
+  is_verified        Boolean  @default(false)
+  status             String   @default("pending") // "pending", "approved", "rejected"
+  created_at         DateTime @default(now())
+}
+
+model Payout {
+  id                    String   @id @default(uuid())
+  firm_id               String
+  firm                  Firm     @relation(fields: [firm_id], references: [id], onDelete: Cascade)
+  trader_username       String
+  amount                Float
+  payout_date           DateTime
+  processing_time_hours Float?
+  method                String?
+  region                String?
+  market_type           String?  // "Forex", "Futures", "Crypto"
+}
+
+model Offer {
+  id                  String   @id @default(uuid())
+  firm_id             String
+  firm                Firm     @relation(fields: [firm_id], references: [id], onDelete: Cascade)
+  promo_code          String
+  discount_percentage Float
+  description         String?
+  expiry_date         DateTime?
+  is_active           Boolean  @default(true)
+}
+
+model LoyaltyClaim {
+  id                     String   @id @default(uuid())
+  user_id                String
+  user                   User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  order_confirmation_url String
+  points_requested       Int
+  status                 String   @default("pending") // "pending", "approved", "rejected"
+  created_at             DateTime @default(now())
+}
+
+model BlogPost {
+  id           String   @id @default(uuid())
+  title        String
+  slug         String   @unique
+  content      String
+  category     String
+  author       String?
+  published_at DateTime @default(now())
+}
