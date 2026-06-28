@@ -25,7 +25,7 @@ router.post('/signup', async (req, res) => {
     const newUser = await prisma.user.create({
       data: {
         email,
-        password_hash: hashedPassword,
+        password: hashedPassword,
         name: name || null,
         role
       }
@@ -40,7 +40,7 @@ router.post('/signup', async (req, res) => {
         email: newUser.email,
         name: newUser.name,
         role: newUser.role,
-        loyalty_points: newUser.loyalty_points
+        loyalty_points: newUser.points
       }
     });
   } catch (error) {
@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
@@ -74,7 +74,7 @@ router.post('/login', async (req, res) => {
         email: user.email,
         name: user.name,
         role: user.role,
-        loyalty_points: user.loyalty_points
+        loyalty_points: user.points
       }
     });
   } catch (error) {
@@ -94,7 +94,7 @@ router.get('/me', verifyToken, async (req, res) => {
       email: user.email,
       name: user.name,
       role: user.role,
-      loyalty_points: user.loyalty_points
+      loyalty_points: user.points
     });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching user profile.', error: error.message });

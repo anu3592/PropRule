@@ -1,6 +1,6 @@
 import { Firm, Challenge, Review, Offer, Payout } from '../types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5005/api';
 
 export async function getFirms(): Promise<Firm[]> {
   try {

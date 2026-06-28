@@ -36,7 +36,13 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="text-gray-300 hover:text-white transition-colors hidden sm:block">
+          <button 
+            onClick={() => {
+              alert("Global search will be integrated soon! For now, try searching directly on the Blog page.");
+            }}
+            className="text-gray-300 hover:text-white transition-colors hidden sm:block relative"
+            title="Search"
+          >
             <Search className="h-5 w-5" />
           </button>
           <div className="hidden sm:flex items-center gap-4 shrink-0">
