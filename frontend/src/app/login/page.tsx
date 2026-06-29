@@ -36,8 +36,11 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirect to home
-      router.push("/");
+      // Notify other components (like Navbar) that user logged in
+      window.dispatchEvent(new Event("user-auth"));
+
+      // Force a full page reload to sync auth state across the app
+      window.location.href = "/";
     } catch (err: any) {
       setError(err.message);
     } finally {
