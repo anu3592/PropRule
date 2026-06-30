@@ -35,6 +35,19 @@ model Firm {
   is_verified    Boolean        @default(false)
   is_listed      Boolean        @default(true)
   description    String?
+  category          String?
+  markets_offered   String[]
+  account_sizes     String?
+  evaluation_model  String?
+  profit_split      String?
+  drawdown_type     String?
+  daily_loss_limit  String?
+  consistency_rule  String?
+  min_trading_days  String?
+  news_trading      String?
+  payout_frequency  String?
+  key_features      String?
+  reputation_notes  String?
   created_at     DateTime       @default(now())
   
   rules          FirmRule?
